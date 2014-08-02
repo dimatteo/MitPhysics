@@ -44,7 +44,7 @@ namespace mithep
       void              SetJetEEMFractionMinCut(Double_t cut){ fJetEEMFractionMinCut = cut;}
       void              SetApplyBetaCut(Bool_t b)            { fApplyBetaCut = b;          }
       void              SetApplyMVACut(Bool_t b)             { fApplyMVACut = b;           }
-      void              SetApplyMVACHS(Bool_t b)             { fApplyMVACut = b;           }
+      void              SetApplyMVACHS(Bool_t b)             { fApplyMVACHS = b;           }
 
     protected:
       void              Process();
