@@ -22,6 +22,7 @@ JetIDMod::JetIDMod(const char *name, const char *title) :
   fJetEEMFractionMinCut(0.01),
   fApplyBetaCut(kFALSE),
   fApplyMVACut(kFALSE),
+  fApplyMVACHS(kFALSE),
   fVertices(0)
 {
 }
@@ -81,7 +82,7 @@ void JetIDMod::Process()
 
     if(fApplyMVACut == kTRUE && 
        fJetIDMVA->pass(pfJet,fVertices->At(0),fVertices) == kFALSE) continue;
-
+    
     // add good jet to collection
     GoodJets->Add(jet);
   }
@@ -102,13 +103,21 @@ void JetIDMod::SlaveBegin()
 
  if (fApplyMVACut == kTRUE) {
    fJetIDMVA = new JetIDMVA();
-   fJetIDMVA->Initialize(JetIDMVA::kLoose,
-	 		 TString((getenv("MIT_DATA")+string("/mva_JetID_lowpt.weights.xml"))),
-                         TString((getenv("MIT_DATA")+string("/mva_JetID_highpt.weights.xml"))),
-                         JetIDMVA::kBaseline,
-                         TString( getenv("CMSSW_BASE")+
-				  string("/src/MitPhysics/Utils/python/JetIdParams_cfi.py")));
- }
+   if (fApplyMVACHS == kTRUE)
+     fJetIDMVA->Initialize(JetIDMVA::kLoose,
+                 TString((getenv("MIT_DATA")+string("/TMVAClassificationCategory_JetID_53X_chs_Dec2012.weights.xml"))),
+                 TString((getenv("MIT_DATA")+string("/TMVAClassificationCategory_JetID_53X_chs_Dec2012.weights.xml"))),
+                 JetIDMVA::k53,
+                 TString( getenv("CMSSW_BASE")+
+                 string("/src/MitPhysics/Utils/python/JetIdParams_cfi.py")));
+   else
+     fJetIDMVA->Initialize(JetIDMVA::kLoose,
+                 TString((getenv("MIT_DATA")+string("/mva_JetID_lowpt.weights.xml"))),
+                 TString((getenv("MIT_DATA")+string("/mva_JetID_highpt.weights.xml"))),
+                 JetIDMVA::kBaseline,
+                 TString( getenv("CMSSW_BASE")+
+                 string("/src/MitPhysics/Utils/python/JetIdParams_cfi.py")));
+  }
 
 }
 

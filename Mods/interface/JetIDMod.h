@@ -44,6 +44,7 @@ namespace mithep
       void              SetJetEEMFractionMinCut(Double_t cut){ fJetEEMFractionMinCut = cut;}
       void              SetApplyBetaCut(Bool_t b)            { fApplyBetaCut = b;          }
       void              SetApplyMVACut(Bool_t b)             { fApplyMVACut = b;           }
+      void              SetApplyMVACHS(Bool_t b)             { fApplyMVACHS = b;           }
 
     protected:
       void              Process();
@@ -59,6 +60,7 @@ namespace mithep
       Double_t          fJetEEMFractionMinCut;  //jet Eem fraction min cut
       Bool_t            fApplyBetaCut;          //=true then apply beta cut
       Bool_t            fApplyMVACut;           //=true then apply MVA cut
+      Bool_t            fApplyMVACHS;           //=true then apply MVA for CHS
       const VertexCol  *fVertices;	        //Vertices branches
       JetIDMVA         *fJetIDMVA;
       ClassDef(JetIDMod, 1) // Jet identification module
