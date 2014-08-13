@@ -6,6 +6,7 @@
 #include "MitAna/DataTree/interface/PFJetCol.h"
 #include "MitPhysics/Utils/interface/JetTools.h"
 
+using namespace std;
 using namespace mithep;
 
 ClassImp(mithep::JetIDMod)
@@ -59,28 +60,30 @@ void JetIDMod::Process()
       continue;
     
     Bool_t passEEMFractionMinCut = kTRUE;
-    if(fJetEEMFractionMinCut > 0){
+    if (fJetEEMFractionMinCut > 0) {
       const CaloJet *caloJet = dynamic_cast<const CaloJet*>(jet); 
       // The 2.6 value is hardcoded, no reason to change that value in CMS
       if (caloJet && caloJet->AbsEta() < 2.6 &&
           caloJet->EnergyFractionEm() < fJetEEMFractionMinCut)
         passEEMFractionMinCut = kFALSE;
     }
-    if(passEEMFractionMinCut == kFALSE)
+    if (passEEMFractionMinCut == kFALSE)
       continue;
 
     // Jet to vertex association cut
     const PFJet *pfJet = dynamic_cast<const PFJet*>(jet);     
     Bool_t passBetaCut = kTRUE;
-    if (pfJet && fApplyBetaCut == kTRUE) {
-      passBetaCut =  JetTools::PassBetaVertexAssociationCut(dynamic_cast<const PFJet*>(jet),
-							    fVertices->At(0), fVertices, 0.2);
-    }
-    if(passBetaCut == kFALSE)
+
+    if (pfJet && fApplyBetaCut == kTRUE)
+      passBetaCut = JetTools::PassBetaVertexAssociationCut(dynamic_cast<const PFJet*>(jet),
+							   fVertices->At(0), fVertices, 0.2);
+
+    if (passBetaCut == kFALSE)
       continue;
 
-    if(fApplyMVACut == kTRUE && 
-       fJetIDMVA->pass(pfJet,fVertices->At(0),fVertices) == kFALSE) continue;
+    if (fApplyMVACut == kTRUE && 
+	fJetIDMVA->pass(pfJet,fVertices->At(0),fVertices) == kFALSE)
+      continue;
 
     // add good jet to collection
     GoodJets->Add(jet);
