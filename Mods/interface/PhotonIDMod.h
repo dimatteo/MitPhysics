@@ -179,6 +179,7 @@ namespace mithep
 	kMITPFPhSelection_NoTrigger,    //MIT loose preselection (for mva, no Trigger)
 	kVgamma2011Selection, // Vgamma 2011 Photon ID
 	kTrivialSelection,    // only pt & eta cuts
+	kEgammaMedium,
         kCustomId             //"Custom"
       };
 
