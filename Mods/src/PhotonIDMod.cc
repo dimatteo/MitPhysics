@@ -330,7 +330,7 @@ void PhotonIDMod::Process()
     //add for mono photon: egamma medium working point
     if(fPhIdType == kEgammaMedium) {
       if(PhotonTools::PassEgammaMediumSelectionWithEleVeto(ph, fElectrons,fConversions,bsp,fPV->At(0), fPFCands, fPV, rho2012, fPhotonPtMin,fApplyElectronVeto,fInvertElectronVeto) )
-	GoodPhotons->AddOwned(ph);
+        GoodPhotons->AddOwned(ph);
       continue; // go to next Photons
     } 
 

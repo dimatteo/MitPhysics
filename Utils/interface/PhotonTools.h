@@ -163,15 +163,15 @@ namespace mithep {
 						 );// add for mono photon                                
     
     static bool PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
-						     const ElectronCol *els,
-						     const DecayParticleCol *conversions, const BaseVertex *bs,
-						     const Vertex* vtx,
-						     const PFCandidateCol* pfCol,
-						     const VertexCol* vtxCol,
-						     double rho, double ptmin,
-						     Bool_t applyElectronVeto, Bool_t invertElectronVeto,
-						     std::vector<double>* kin= NULL // store variables for debugging...
-						     );// add for mono photon 
+                                                     const ElectronCol *els,
+                                                     const DecayParticleCol *conversions, const BaseVertex *bs,
+                                                     const Vertex* vtx,
+                                                     const PFCandidateCol* pfCol,
+                                                     const VertexCol* vtxCol,
+                                                     double rho, double ptmin,
+                                                     Bool_t applyElectronVeto, Bool_t invertElectronVeto,
+                                                     std::vector<double>* kin= NULL // store variables for debugging...
+                                                     );// add for mono photon 
 
     static bool PassVgamma2011Selection(const Photon* ph, double rho);
 

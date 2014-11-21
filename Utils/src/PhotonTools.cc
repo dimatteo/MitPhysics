@@ -776,15 +776,15 @@ bool PhotonTools::PassCiCPFIsoSelectionWithEleVeto(const Photon* ph,
 
 
 bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
-						       const ElectronCol *els,
-						       const DecayParticleCol *conversions, const BaseVertex *bs,
-						       const Vertex* vtx,
-						       const PFCandidateCol* pfCol,
-						       const VertexCol* vtxCol,
-						       double rho, double ptmin,
-						       Bool_t applyElectronVeto, Bool_t invertElectronVeto,
-						       std::vector<double>* kin // store variables for debugging...
-						       ) {
+                                                       const ElectronCol *els,
+                                                       const DecayParticleCol *conversions, const BaseVertex *bs,
+                                                       const Vertex* vtx,
+                                                       const PFCandidateCol* pfCol,
+                                                       const VertexCol* vtxCol,
+                                                       double rho, double ptmin,
+                                                       Bool_t applyElectronVeto, Bool_t invertElectronVeto,
+                                                       std::vector<double>* kin // store variables for debugging...
+                                                       ) {
   Bool_t PassEleVetoRaw = PhotonTools::PassElectronVetoConvRecovery(ph, els, conversions, bs);
   Bool_t PassEleVeto = (!applyElectronVeto && !invertElectronVeto) || (applyElectronVeto && !invertElectronVeto && PassEleVetoRaw) || (!applyElectronVeto && invertElectronVeto && !PassEleVetoRaw);
   if(!PassEleVeto){
@@ -806,6 +806,7 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
     0.016, 0.024, 0.262,
     0.020, 0.039, 0.260,
     0.012, 0.072, 0.266};
+    
   // determine the eta category (needed for the EA)
   double absEta = ph->SCluster()->AbsEta();
   int _etaCat = 0;
@@ -817,7 +818,9 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
   if (absEta >= 2.4) _etaCat = 6;
   // determine EB/EE category
   Bool_t isbarrel = true;
-  if (_etaCat >= 2) isbarrel = false;
+  if (_etaCat >= 2) 
+    isbarrel = false;
+    
   // compute all relevant observables first
   double CHIso03 = IsolationTools::PFChargedIsolation(ph, vtx, 0.3, 0.0, pfCol);
   double NHIso03 = IsolationTools::PFNeutralHadronIsolation(ph, 0.3, 0.0, pfCol);
@@ -837,19 +840,25 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
   //<< " covIEtaIEta " << covIEtaIEta
   //<< " HoE " << HoE
   //<< std::endl;
+
   // check which category it is ...
   int _tCat = 1;
-  if ( !isbarrel ) _tCat = 2;
+  if ( !isbarrel ) 
+    _tCat = 2;
   float passCuts = 1.;
-  if (ph->Pt() <= ptmin) passCuts = -1.;
-  if (!ph->IsEB() && !ph->IsEE()) passCuts = -1.;
+  if (ph->Pt() <= ptmin) 
+    passCuts = -1.;
+  if (!ph->IsEB() && !ph->IsEE()) 
+    passCuts = -1.;
   if( !(HoE < egmedium_all_cuts[_tCat-1+0*2]
-	&&covIEtaIEta < egmedium_all_cuts[_tCat-1+1*2]
-	&&combIso1 < egmedium_all_cuts[_tCat-1+2*2]
-	&&combIso2 < (egmedium_all_cuts[_tCat-1+3*2] + 0.04 * ph->Pt())
-	&&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt())
-	)) passCuts = -1.;
-  if(passCuts > 0.) return true;
+      &&covIEtaIEta < egmedium_all_cuts[_tCat-1+1*2]
+      &&combIso1 < egmedium_all_cuts[_tCat-1+2*2]
+      &&combIso2 < (egmedium_all_cuts[_tCat-1+3*2] + 0.04 * ph->Pt())
+      &&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt()) )) 
+      passCuts = -1.;
+
+  if(passCuts > 0.) 
+    return true;
   return false;
 }
 
