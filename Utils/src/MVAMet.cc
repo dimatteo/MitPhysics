@@ -1145,7 +1145,8 @@ Met MVAMet::GetMet(const MuonCol *iMuons,const ElectronCol *iElectrons,const PFT
   for(UInt_t i0 = 0; i0 < iPhotons->GetEntries(); i0++) {
     const Photon *pPhoton = iPhotons->At(i0);
     if(!MetLeptonTools::loosePhotonId(pPhoton)) continue;
-    FourVectorM pVis(0,0,0,0); pVis.SetCoordinates(0.,pPhoton->Eta(),pPhoton->Phi(),0);
+    Float_t photonChargedFrac = MetLeptonTools::chargedFracInCone(pPhoton,iCands,lPV);
+    FourVectorM pVis(0,0,0,0); pVis.SetCoordinates(pPhoton->Pt()*photonChargedFrac,pPhoton->Eta(),pPhoton->Phi(),0);
     std::pair<FourVectorM,FourVectorM> pVec(pPhoton->Mom(),pVis);
     lDecay  .push_back(pVec);
     lId     .push_back(0);

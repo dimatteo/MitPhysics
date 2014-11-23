@@ -153,3 +153,24 @@ Float_t MetLeptonTools::isoPV(const ChargedParticle *iLep,const PFCandidateCol *
   }
   return lPtSumCharge;// + TMath::Max(lPtSumNeut-lPtSumPU*0.5,0.))/iLep->Pt();
 }
+
+// ------ ported from -------------------------------------------------------- // 
+// ------ JetMETCorrections-METPUSubtraction/plugins/PFMETProducerMVA.cc ----- // 
+Float_t MetLeptonTools::chargedFracInCone(const Photon *iPhoton,const PFCandidateCol *iCands,
+                                          const Vertex *iPV) {
+  FourVectorM lVis(0,0,0,0);
+  for(UInt_t i0 = 0; i0 < iCands->GetEntries(); i0++) {
+    const PFCandidate *pCand = iCands->At(i0);
+    Double_t pDR = MathUtils::DeltaR(iPhoton->Mom(), pCand->Mom());
+    if(pDR         > 0.2)                       continue;
+    Double_t pDz = -999; // PH: If no vertex is reconstructed in the event
+                         // or PFCandidate has no track, set dZ to -999
+    if(iPV != 0 && pCand->HasTrk()) 
+      pDz = TMath::Abs(pCand->BestTrk()->DzCorrected(*iPV)); 
+    
+    if(pDz > 0.1) continue;
+    lVis += pCand->Mom();
+  }
+
+  return lVis.Pt()/iPhoton->Pt();
+}

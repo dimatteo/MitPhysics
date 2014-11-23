@@ -36,7 +36,9 @@ namespace mithep {
     static double  vis(const PFTau *iTau);
     static Float_t PFIsolation(const ChargedParticle *iLep,const PFCandidateCol *iCands);  
     static Float_t isoPV(const ChargedParticle *iLep,const PFCandidateCol *iCands,
-			 const Vertex *iPV,const VertexCol *iVertices,bool iEle=false);
+                         const Vertex *iPV,const VertexCol *iVertices,bool iEle=false);
+    static Float_t chargedFracInCone(const Photon *iPhoton,const PFCandidateCol *iCands,
+                                     const Vertex *iPV);
   };
 }
 #endif
