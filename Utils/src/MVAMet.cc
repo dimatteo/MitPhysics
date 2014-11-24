@@ -418,11 +418,11 @@ Met MVAMet::GetMet(	Bool_t iPhi,
   double lCovU1 = evaluateCovU1();
   double lCovU2 = evaluateCovU2();
 
-  //Now Compute teh covariance matrix in X and Y                                                                                                                                                           
+  //Now Compute the covariance matrix in X and Y                                                                                                                                                           
   double lCos2 = cos(fUPhiMVA)*cos(fUPhiMVA);
   double lSin2 = sin(fUPhiMVA)*sin(fUPhiMVA);
 
-  //Now Compute teh covariance matrix in X and Y                                                                                                                                                           
+  //Now Compute the covariance matrix in X and Y                                                                                                                                                           
   (*fCov)(0,0)   =  lCovU1*lCos2+lCovU2*lSin2;
   (*fCov)(1,0)   = -lCovU1*sin(fUPhiMVA)*cos(fUPhiMVA)+lCovU2*sin(fUPhiMVA)*cos(fUPhiMVA);
   (*fCov)(0,1)   =  (*fCov)(1,0);
