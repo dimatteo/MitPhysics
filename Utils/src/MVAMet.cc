@@ -332,6 +332,7 @@ Met MVAMet::GetMet(	Bool_t iPhi,
 			FactorizedJetCorrector *iJetCorrector,
 			const PileupEnergyDensityCol *iPUEnergyDensity,
 			int iNPV,
+      Bool_t hasPhotons,
 			Bool_t printDebug) {
 
   int lNPV = 0;
@@ -390,14 +391,20 @@ Met MVAMet::GetMet(	Bool_t iPhi,
   fNJet     = lNJet   ;
   fNAllJet  = lNAllJet;
   fNPV      = lNPV    ;
-   Float_t lMVA = evaluatePhi();
-   if(!iPhi) fUPhiMVA = fUPhi + lMVA; 
+  Float_t lMVA = evaluatePhi();
+  //Perform photon check and fix events with unphysical properties
+  if (hasPhotons)
+    if (fTKU/iPtVis < 0.1 || fNPU/iPtVis < 0.1) lMVA = 0.;
+  if(!iPhi) fUPhiMVA = fUPhi + lMVA; 
   //Not no nice feature of teh training
   //fTKSumEt  /= lPFRec.SumEt();
   //fNPSumEt  /= lPFRec.SumEt();
   //fPUSumEt  /= lPFRec.SumEt();
   //fPCSumEt  /= lPFRec.SumEt();
-   if(!iPhi) lMVA     = evaluateU1();//fU1Reader    ->EvaluateMVA( fU1MethodName );  
+  if(!iPhi) lMVA     = evaluateU1();//fU1Reader    ->EvaluateMVA( fU1MethodName );  
+  //Perform photon check and fix events with unphysical properties
+  if (hasPhotons)
+    if (fTKU/iPtVis < 0.1 || fNPU/iPtVis < 0.1) lMVA = 1.;
   fUMVA              = fU*lMVA;
 
   TLorentzVector lUVec(0,0,0,0);   lUVec .SetPtEtaPhiM(fUMVA,0,fUPhiMVA,0);
@@ -411,9 +418,10 @@ Met MVAMet::GetMet(	Bool_t iPhi,
   double lCovU1 = evaluateCovU1();
   double lCovU2 = evaluateCovU2();
 
+  //Now Compute teh covariance matrix in X and Y                                                                                                                                                           
   double lCos2 = cos(fUPhiMVA)*cos(fUPhiMVA);
   double lSin2 = sin(fUPhiMVA)*sin(fUPhiMVA);
-  
+
   //Now Compute teh covariance matrix in X and Y                                                                                                                                                           
   (*fCov)(0,0)   =  lCovU1*lCos2+lCovU2*lSin2;
   (*fCov)(1,0)   = -lCovU1*sin(fUPhiMVA)*cos(fUPhiMVA)+lCovU2*sin(fUPhiMVA)*cos(fUPhiMVA);
@@ -1149,11 +1157,12 @@ Met MVAMet::GetMet(const MuonCol *iMuons,const ElectronCol *iElectrons,const PFT
     FourVectorM pVis(0,0,0,0); pVis.SetCoordinates(pPhoton->Pt()*photonChargedFrac,pPhoton->Eta(),pPhoton->Phi(),0);
     std::pair<FourVectorM,FourVectorM> pVec(pPhoton->Mom(),pVis);
     lDecay  .push_back(pVec);
-    lId     .push_back(0);
+    lId     .push_back(3);
     fNPhotons++;
   }
   std::vector<std::pair<FourVectorM,FourVectorM> > lFinalDecay;
   std::vector<int>                                 lFinalId;
+  bool hasPhotons = false;
   for(unsigned int i0 = 0; i0 < lDecay.size(); i0++) { 
     bool pAdd = true;
     for(unsigned int i1 = 0; i1 < lDecay.size(); i1++) { 
@@ -1170,6 +1179,9 @@ Met MVAMet::GetMet(const MuonCol *iMuons,const ElectronCol *iElectrons,const PFT
     }
     if(pAdd) lFinalDecay.push_back(lDecay[i0]);
     if(pAdd) lFinalId   .push_back(lId   [i0]);
+    // check of "lepton" is a photon
+    if (lId   [i0] == 3)
+      hasPhotons = true;  
   }
   for(unsigned int i0 = 0; i0 < lFinalDecay.size(); i0++) { 
     lTotVec   += lFinalDecay[i0].first;
@@ -1195,7 +1207,8 @@ Met MVAMet::GetMet(const MuonCol *iMuons,const ElectronCol *iElectrons,const PFT
 			 lCleanJets,
 			 iJetCorrector,
 			 iPUEnergyDensity,
-			 int(iVertices->GetEntries()));//,true);  
+			 int(iVertices->GetEntries()),
+       hasPhotons);  
   return lMVAMet;
 }
 

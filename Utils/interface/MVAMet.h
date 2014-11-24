@@ -105,7 +105,8 @@ namespace mithep {
 			FactorizedJetCorrector *iJetCorrector,
 			const PileupEnergyDensityCol *iPileupEnergyDensity,
 			int iNPV,
-			Bool_t printDebug=false);
+			Bool_t hasPhotons=false,
+            Bool_t printDebug=false);
 
     Met GetMet( 	Bool_t iPhi,
 			Float_t iPtVis,Float_t iPhiVis,Float_t iSumEtVis,
