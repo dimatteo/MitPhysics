@@ -1116,7 +1116,7 @@ Met MVAMet::GetMet(const PhotonCol *iPhotons,
 //--------------------------------------------------------------------------------------------------
 Met MVAMet::GetMet(const MuonCol *iMuons,const ElectronCol *iElectrons,const PFTauCol *iTaus,const PhotonCol *iPhotons,
                    const PFCandidateCol *iCands,const PFJetCol  *iJets,const Vertex *iPV,const VertexCol *iVertices,const PFMetCol *iPFMet,
-                   FactorizedJetCorrector *iJetCorrector,const PileupEnergyDensityCol* iPUEnergyDensity) {
+                   FactorizedJetCorrector *iJetCorrector,const PileupEnergyDensityCol* iPUEnergyDensity, Bool_t printDebug) {
   const Vertex *lPV = iPV; if(iPV == 0 && iVertices->GetEntries() > 0) lPV = iVertices->At(0); 
   FourVectorM lTotVec(0,0,0,0); double lTotSumEt = 0;
   FourVectorM lVisVec(0,0,0,0); double lVisSumEt = 0;
@@ -1208,7 +1208,8 @@ Met MVAMet::GetMet(const MuonCol *iMuons,const ElectronCol *iElectrons,const PFT
 			 iJetCorrector,
 			 iPUEnergyDensity,
 			 int(iVertices->GetEntries()),
-       hasPhotons);  
+       hasPhotons,
+       printDebug);  
   return lMVAMet;
 }
 

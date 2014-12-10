@@ -787,6 +787,16 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
                                                        ) {
   Bool_t PassEleVetoRaw = PhotonTools::PassElectronVetoConvRecovery(ph, els, conversions, bs);
   Bool_t PassEleVeto = (!applyElectronVeto && !invertElectronVeto) || (applyElectronVeto && !invertElectronVeto && PassEleVetoRaw) || (!applyElectronVeto && invertElectronVeto && !PassEleVetoRaw);
+  
+  //debug
+  std::cout
+  << " ph->Pt() " << ph->Pt()
+  << " ph->Eta() " << ph->Eta()
+  << " ph->IsEB() " << ph->IsEB()
+  << " ph->IsEE() " << ph->IsEE()
+  << " PassEleVeto " << PassEleVeto
+  << std::endl;
+  
   if(!PassEleVeto){
     return false;
   }
@@ -830,17 +840,6 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
   double combIso3 = TMath::Max(PHIso03 - rho*effective_area[2+_etaCat*3], 0.);
   double covIEtaIEta =ph->CoviEtaiEta();
   double HoE = ph->HadOverEmTow(); //single tower H/E
-  //// debug
-  //std::cout
-  //<< " ph->IsEB() " << ph->IsEB()
-  //<< " ph->IsEE() " << ph->IsEE()
-  //<< " combIso1 " << combIso1
-  //<< " combIso2 " << combIso2
-  //<< " combIso3 " << combIso3
-  //<< " covIEtaIEta " << covIEtaIEta
-  //<< " HoE " << HoE
-  //<< std::endl;
-
   // check which category it is ...
   int _tCat = 1;
   if ( !isbarrel ) 
@@ -850,12 +849,34 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
     passCuts = -1.;
   if (!ph->IsEB() && !ph->IsEE()) 
     passCuts = -1.;
-  if( !(HoE < egmedium_all_cuts[_tCat-1+0*2]
+  if( !(
+      HoE < egmedium_all_cuts[_tCat-1+0*2]
       &&covIEtaIEta < egmedium_all_cuts[_tCat-1+1*2]
       &&combIso1 < egmedium_all_cuts[_tCat-1+2*2]
       &&combIso2 < (egmedium_all_cuts[_tCat-1+3*2] + 0.04 * ph->Pt())
-      &&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt()) )) 
+      &&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt()) 
+      )) 
       passCuts = -1.;
+
+  // debug
+  std::cout
+  << " rho " << rho
+  << " CHIso03 " << CHIso03
+  << " NHIso03 " << NHIso03
+  << " PHIso03 " << PHIso03
+  << " combIso1 " << combIso1
+  << " combIso2 " << combIso2
+  << " combIso3 " << combIso3
+  << " covIEtaIEta " << covIEtaIEta
+  << " HoE " << HoE
+  << " Decision " << (bool) (
+      HoE < egmedium_all_cuts[_tCat-1+0*2]
+      &&covIEtaIEta < egmedium_all_cuts[_tCat-1+1*2]
+      &&combIso1 < egmedium_all_cuts[_tCat-1+2*2]
+      &&combIso2 < (egmedium_all_cuts[_tCat-1+3*2] + 0.04 * ph->Pt())
+      &&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt()) 
+      )
+  << std::endl;
 
   if(passCuts > 0.) 
     return true;
