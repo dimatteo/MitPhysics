@@ -165,9 +165,9 @@ Float_t MetLeptonTools::chargedFracInCone(const Photon *iPhoton,const PFCandidat
     if(iPV != 0 && pCand->HasTrk()) 
       pDz = TMath::Abs(pCand->BestTrk()->DzCorrected(*iPV)); 
     
-    if(pDz > 0.1) continue;
+    if(TMath::Abs(pDz) > 0.1) continue;
     lVis += pCand->Mom();
   }
-
+  
   return lVis.Pt()/iPhoton->Pt();
 }
