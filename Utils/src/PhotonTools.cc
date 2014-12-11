@@ -788,14 +788,14 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
   Bool_t PassEleVetoRaw = PhotonTools::PassElectronVetoConvRecovery(ph, els, conversions, bs);
   Bool_t PassEleVeto = (!applyElectronVeto && !invertElectronVeto) || (applyElectronVeto && !invertElectronVeto && PassEleVetoRaw) || (!applyElectronVeto && invertElectronVeto && !PassEleVetoRaw);
   
-  //debug
-  std::cout
-  << " ph->Pt() " << ph->Pt()
-  << " ph->Eta() " << ph->Eta()
-  << " ph->IsEB() " << ph->IsEB()
-  << " ph->IsEE() " << ph->IsEE()
-  << " PassEleVeto " << PassEleVeto
-  << std::endl;
+  ////debug
+  //std::cout
+  //<< " ph->Pt() " << ph->Pt()
+  //<< " ph->Eta() " << ph->Eta()
+  //<< " ph->IsEB() " << ph->IsEB()
+  //<< " ph->IsEE() " << ph->IsEE()
+  //<< " PassEleVeto " << PassEleVeto
+  //<< std::endl;
   
   if(!PassEleVeto){
     return false;
@@ -858,25 +858,25 @@ bool PhotonTools::PassEgammaMediumSelectionWithEleVeto(const Photon* ph,
       )) 
       passCuts = -1.;
 
-  // debug
-  std::cout
-  << " rho " << rho
-  << " CHIso03 " << CHIso03
-  << " NHIso03 " << NHIso03
-  << " PHIso03 " << PHIso03
-  << " combIso1 " << combIso1
-  << " combIso2 " << combIso2
-  << " combIso3 " << combIso3
-  << " covIEtaIEta " << covIEtaIEta
-  << " HoE " << HoE
-  << " Decision " << (bool) (
-      HoE < egmedium_all_cuts[_tCat-1+0*2]
-      &&covIEtaIEta < egmedium_all_cuts[_tCat-1+1*2]
-      &&combIso1 < egmedium_all_cuts[_tCat-1+2*2]
-      &&combIso2 < (egmedium_all_cuts[_tCat-1+3*2] + 0.04 * ph->Pt())
-      &&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt()) 
-      )
-  << std::endl;
+  //// debug
+  //std::cout
+  //<< " rho " << rho
+  //<< " CHIso03 " << CHIso03
+  //<< " NHIso03 " << NHIso03
+  //<< " PHIso03 " << PHIso03
+  //<< " combIso1 " << combIso1
+  //<< " combIso2 " << combIso2
+  //<< " combIso3 " << combIso3
+  //<< " covIEtaIEta " << covIEtaIEta
+  //<< " HoE " << HoE
+  //<< " Decision " << (bool) (
+      //HoE < egmedium_all_cuts[_tCat-1+0*2]
+      //&&covIEtaIEta < egmedium_all_cuts[_tCat-1+1*2]
+      //&&combIso1 < egmedium_all_cuts[_tCat-1+2*2]
+      //&&combIso2 < (egmedium_all_cuts[_tCat-1+3*2] + 0.04 * ph->Pt())
+      //&&combIso3 < (egmedium_all_cuts[_tCat-1+4*2] + 0.005 * ph->Pt()) 
+      //)
+  //<< std::endl;
 
   if(passCuts > 0.) 
     return true;
