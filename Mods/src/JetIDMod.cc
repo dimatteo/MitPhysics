@@ -21,6 +21,7 @@ JetIDMod::JetIDMod(const char *name, const char *title) :
   fJetPtCut(35.0),
   fJetEtaMaxCut(5.0),
   fJetEEMFractionMinCut(0.01),
+  fApplyPFLooseId(kFALSE),
   fApplyBetaCut(kFALSE),
   fApplyMVACut(kFALSE),
   fApplyMVACHS(kFALSE),
@@ -71,8 +72,16 @@ void JetIDMod::Process()
     if (passEEMFractionMinCut == kFALSE)
       continue;
 
-    // Jet to vertex association cut
+    // PFJet id
     const PFJet *pfJet = dynamic_cast<const PFJet*>(jet);     
+    Bool_t passPFLooseId = kTRUE;
+    if (pfJet && fApplyPFLooseId == kTRUE)
+      passPFLooseId = JetTools::passPFLooseId(dynamic_cast<const PFJet*>(jet));
+    
+    if (passPFLooseId == kFALSE)
+      continue;
+    
+    // Jet to vertex association cut
     Bool_t passBetaCut = kTRUE;
 
     if (pfJet && fApplyBetaCut == kTRUE)

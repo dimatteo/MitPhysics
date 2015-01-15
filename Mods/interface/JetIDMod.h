@@ -42,6 +42,7 @@ namespace mithep
       void              SetUseCorrection(Bool_t b)           { fUseJetCorrection = b;      }
       void              SetEtaMaxCut(Double_t cut)           { fJetEtaMaxCut = cut;        }
       void              SetJetEEMFractionMinCut(Double_t cut){ fJetEEMFractionMinCut = cut;}
+      void              SetApplyPFLooseId(Bool_t b)          { fApplyPFLooseId = b;        }
       void              SetApplyBetaCut(Bool_t b)            { fApplyBetaCut = b;          }
       void              SetApplyMVACut(Bool_t b)             { fApplyMVACut = b;           }
       void              SetApplyMVACHS(Bool_t b)             { fApplyMVACHS = b;           }
@@ -58,6 +59,7 @@ namespace mithep
       Double_t          fJetPtCut;              //jet pt cut
       Double_t          fJetEtaMaxCut;          //jet eta max cut
       Double_t          fJetEEMFractionMinCut;  //jet Eem fraction min cut
+      Bool_t            fApplyPFLooseId;        //=true then apply PFLooseId
       Bool_t            fApplyBetaCut;          //=true then apply beta cut
       Bool_t            fApplyMVACut;           //=true then apply MVA cut
       Bool_t            fApplyMVACHS;           //=true then apply MVA for CHS
