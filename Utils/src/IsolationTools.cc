@@ -517,9 +517,117 @@ Double_t IsolationTools::PFElectronIsolation2012(const Electron *ele, const Vert
 
   return (IsoVar_ChargedIso_DR + IsoVar_NeutralIso_DR);
 }
+//--------------------------------------------------------------------------------------------------
+Double_t IsolationTools::PFElectronIsolation2012(const Electron *ele, const Vertex *vertex, 
+                                                 const PFCandidateCol *PFCands, 
+                                                 const PileupEnergyDensityCol *PileupEnergyDensity,
+                                                 ElectronTools::EElectronEffectiveAreaTarget EffectiveAreaTarget,
+                                                 ElectronTools::EElectronEffectiveAreaType EffectiveAreaType,
+                                                 const ElectronCol *goodElectrons,
+                                                 const MuonCol *goodMuons, Double_t dRMax,
+						 Bool_t isDebug)
+{
+  Double_t tmpChargedIso_DR       = 0;
+  Double_t tmpGammaIso_DR         = 0;
+  Double_t tmpNeutralHadronIso_DR = 0;
+
+  for (UInt_t p=0; p<PFCands->GetEntries();p++) {   
+    const PFCandidate *pf = PFCands->At(p);
+
+    // exclude the electron itself
+    //if (pf->GsfTrk() && ele->GsfTrk() &&
+    //   pf->GsfTrk() == ele->GsfTrk()) continue;
+    //if (pf->TrackerTrk() && ele->TrackerTrk() &&
+    //   pf->TrackerTrk() == ele->TrackerTrk()) continue;      
+
+    //************************************************************
+    // New Isolation Calculations
+    //************************************************************
+    Double_t dr = MathUtils::DeltaR(ele->Mom(), pf->Mom());
+
+    if (dr < 1.0) {
+      Bool_t IsLeptonFootprint = kFALSE;
+      //************************************************************
+      // Lepton Footprint Removal
+      //************************************************************            
+      for (UInt_t q=0; q < goodElectrons->GetEntries() ; ++q) {
+	//if pf candidate matches an electron passing ID cuts, then veto it
+	if (pf->GsfTrk() && goodElectrons->At(q)->GsfTrk() &&
+	   pf->GsfTrk() == goodElectrons->At(q)->GsfTrk()) IsLeptonFootprint = kTRUE;
+	if (pf->TrackerTrk() && goodElectrons->At(q)->TrackerTrk() &&
+	   pf->TrackerTrk() == goodElectrons->At(q)->TrackerTrk()) IsLeptonFootprint = kTRUE;
+	//if pf candidate lies in veto regions of electron passing ID cuts, then veto it
+	if (pf->BestTrk() && fabs(goodElectrons->At(q)->SCluster()->Eta()) >= 1.479 
+           && MathUtils::DeltaR(goodElectrons->At(q)->Mom(), pf->Mom()) < 0.015) IsLeptonFootprint = kTRUE;
+	if (pf->PFType() == PFCandidate::eGamma && fabs(goodElectrons->At(q)->SCluster()->Eta()) >= 1.479 &&
+	   MathUtils::DeltaR(goodElectrons->At(q)->Mom(), pf->Mom()) < 0.08) IsLeptonFootprint = kTRUE;
+      }
+      for (UInt_t q=0; q < goodMuons->GetEntries() ; ++q) {
+	//if pf candidate matches an muon passing ID cuts, then veto it
+	if (pf->TrackerTrk() && goodMuons->At(q)->TrackerTrk() &&
+	   pf->TrackerTrk() == goodMuons->At(q)->TrackerTrk()) IsLeptonFootprint = kTRUE;
+	//if pf candidate lies in veto regions of muon passing ID cuts, then veto it
+	if (pf->BestTrk() && MathUtils::DeltaR(goodMuons->At(q)->Mom(), pf->Mom()) < 0.01) IsLeptonFootprint = kTRUE;
+      }
+
+      if (!IsLeptonFootprint) {
+	Bool_t passVeto = kTRUE;
+	//Charged
+	 if (pf->BestTrk()) {	  	   
+	   // CMS DOESN"T WANT THIS
+	   //if (!(fabs(pf->BestTrk()->DzCorrected(*vertex) - ele->BestTrk()->DzCorrected(*vertex)) < 0.2)) passVeto = kFALSE;
+	   //************************************************************
+	   // Veto any PFmuon, or PFEle
+	   if (pf->PFType() == PFCandidate::eElectron || pf->PFType() == PFCandidate::eMuon) passVeto = kFALSE;
+	   //************************************************************
+	   //************************************************************
+	   // Footprint Veto
+	   if (fabs(ele->SCluster()->Eta()) >= 1.479 && dr < 0.015) passVeto = kFALSE;
+	   //************************************************************
+	   if (passVeto) {
+	     if (dr < dRMax) tmpChargedIso_DR += pf->Pt();
+	   } //pass veto	  
+	 }
+	 //Gamma
+	 else if (pf->PFType() == PFCandidate::eGamma) {
+	   //************************************************************
+	   // Footprint Veto
+	   if (fabs(ele->SCluster()->Eta()) >= 1.479) {
+             if (dr < 0.08) passVeto = kFALSE;
+	   }
+	   //************************************************************
+	   
+	   if (passVeto) {
+	     if (dr < dRMax) tmpGammaIso_DR += pf->Pt();
+	   }
+	 }
+	 //NeutralHadron
+	 else {
+           if (dr < dRMax) tmpNeutralHadronIso_DR += pf->Pt();
+	 }
+      } //not lepton footprint
+    } //in 1.0 dr cone
+  } //loop over PF candidates
+
+  Double_t Rho = 0;
+  if (!(TMath::IsNaN(PileupEnergyDensity->At(0)->Rho()) || isinf(PileupEnergyDensity->At(0)->Rho()))) Rho = PileupEnergyDensity->At(0)->Rho();
+  
+  Double_t IsoVar_ChargedIso_DR = tmpChargedIso_DR/ele->Pt();
+  Double_t IsoVar_NeutralIso_DR = tmpGammaIso_DR + tmpNeutralHadronIso_DR;
+
+  double EA = ElectronTools::ElectronEffectiveArea(EffectiveAreaType, ele->SCluster()->Eta(), EffectiveAreaTarget);
+
+  IsoVar_NeutralIso_DR = TMath::Max((IsoVar_NeutralIso_DR - Rho*EA)/ele->Pt(), 0.0);
+  
+  if (isDebug == kTRUE){
+    printf("Iso(ch, em, nh), EA, RelIso = (%f, %f, %f), %f, %f\n",tmpChargedIso_DR,tmpGammaIso_DR,tmpNeutralHadronIso_DR,
+           EA,IsoVar_ChargedIso_DR + IsoVar_NeutralIso_DR);
+  }
+
+  return (IsoVar_ChargedIso_DR + IsoVar_NeutralIso_DR);
+}
 
 //--------------------------------------------------------------------------------------------------
-
 Double_t IsolationTools::PFElectronIsolation2012LepTag(const Electron *ele, const Vertex *vertex, 
 						       const PFCandidateCol *PFCands, 
 						       const PileupEnergyDensityCol *PileupEnergyDensity,

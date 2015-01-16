@@ -285,6 +285,9 @@ Bool_t ElectronIDMod::PassIDCut(const Electron *ele, ElectronTools::EElIdType id
     case ElectronTools::kVBTFWorkingPointFakeableId:
       idcut = ElectronTools::PassCustomID(ele, ElectronTools::kVBTFWorkingPointFakeableId);
       break;
+    case ElectronTools::kVetoId:
+      idcut = ElectronTools::PassCustomID(ele, ElectronTools::kVetoId);
+      break;
     case ElectronTools::kVBTFWorkingPoint95Id:
       idcut = ElectronTools::PassCustomID(ele, ElectronTools::kVBTFWorkingPoint95Id);
       break;
@@ -476,6 +479,31 @@ Bool_t ElectronIDMod::PassIsolationCut(const Electron *ele, ElectronTools::EElIs
                (ele->EcalRecHitIsoDr03()  < ele->Pt()*0.2) &&
                (ele->HcalTowerSumEtDr03() < ele->Pt()*0.2);
       break;
+    case ElectronTools::kPFIso_Rp3:
+    {
+      Bool_t isDebug = kFALSE;
+      if (isDebug == kTRUE) {
+        printf("PFIso_Rp3: %d, pt, eta = %f, %f, rho = %f(%f) : ",
+           GetEventHeader()->EvtNum(),ele->Pt(), ele->Eta(),
+	   fPileupEnergyDensity->At(0)->Rho(),fPileupEnergyDensity->At(0)->RhoKt6PFJets());
+      }
+      ElectronOArr *tempIsoElectrons = new  ElectronOArr;
+      MuonOArr     *tempIsoMuons     = new  MuonOArr;
+      Double_t IsoOverPt = IsolationTools::PFElectronIsolation2012(ele, vertex, fPFNoPileUpCands, 
+       fPileupEnergyDensity, ElectronTools::kEleEAData2012, ElectronTools::kEleGammaAndNeutralHadronIso03, tempIsoElectrons, tempIsoMuons, 0.3, isDebug);
+      delete tempIsoElectrons;
+      delete tempIsoMuons;
+      Double_t eta = ele->SCluster()->AbsEta();
+      Double_t IsoCut = -1;
+      if (ele->Pt() <  20 && eta <  0.800		) IsoCut = 0.150;
+      if (ele->Pt() <  20 && eta >= 0.800 && eta < 1.479) IsoCut = 0.150;
+      if (ele->Pt() <  20 && eta >= 1.479		) IsoCut = 0.150;
+      if (ele->Pt() >= 20 && eta <  0.800		) IsoCut = 0.150;
+      if (ele->Pt() >= 20 && eta >= 0.800 && eta < 1.479) IsoCut = 0.150;
+      if (ele->Pt() >= 20 && eta >= 1.479		) IsoCut = 0.150;
+      if (IsoOverPt < IsoCut) isocut = kTRUE;
+    }
+    break;
     case ElectronTools::kPFIso_HWW2012TrigV0:
     {
       Bool_t isDebug = kFALSE;
@@ -605,6 +633,7 @@ void ElectronIDMod::Process()
      fElIsoType == ElectronTools::kMVAIso_BDTG_IDIsoCombined || 
      fElIdType  == ElectronTools::kMVAID_BDTG_IDHWW2012TrigV0  || 
      fElIsoType == ElectronTools::kMVAIso_BDTG_IDIsoCombinedHWW2012TrigV4 ||
+     fElIsoType == ElectronTools::kPFIso_Rp3      || 
      fElIsoType == ElectronTools::kPFIso_HWW2012TrigV0      || 
      fElIsoType == ElectronTools::kPFIso_HggLeptonTag2012 ||
      fElIsoType == ElectronTools::kPFIso_HggLeptonTag2012HCP
@@ -613,7 +642,7 @@ void ElectronIDMod::Process()
     assert(fPileupEnergyDensity);
   }
 
-  if (fElIsoType == ElectronTools::kPFIso_HWW2012TrigV0 || fElIsoType == ElectronTools::kPFIso_HggLeptonTag2012 || fElIsoType == ElectronTools::kPFIso_HggLeptonTag2012HCP) {
+  if (fElIsoType == ElectronTools::kPFIso_Rp3 || fElIsoType == ElectronTools::kPFIso_HWW2012TrigV0 || fElIsoType == ElectronTools::kPFIso_HggLeptonTag2012 || fElIsoType == ElectronTools::kPFIso_HggLeptonTag2012HCP) {
     // Name is hardcoded, can be changed if someone feels to do it
     fPFNoPileUpCands = GetObjThisEvt<PFCandidateCol>(fPFNoPileUpName);
   }
@@ -862,6 +891,7 @@ void ElectronIDMod::SlaveBegin()
       || fElectronIsoType.CompareTo("CombinedRelativeConeAreaCorrected") == 0 
       || fElectronIsoType.CompareTo("MVA_BDTG_IDIsoCombined") == 0
       || fElectronIDType.CompareTo("MVA_BDTG_IDHWW2012TrigV0") == 0
+      || fElectronIsoType.CompareTo("PFIso_Rp3") == 0
       || fElectronIsoType.CompareTo("PFIso_HWW2012TrigV0") == 0
       || fElectronIsoType.CompareTo("PFIso_HggLeptonTag2012") == 0
       || fElectronIDType.CompareTo("MVA_BDTG_IDIsoCombinedHWW2012TrigV4") == 0
@@ -909,6 +939,8 @@ void ElectronIDMod::Setup()
     fElIdType = ElectronTools::kCustomIdTight;
   else if (fElectronIDType.CompareTo("VBTFWorkingPointFakeableId") == 0) 
     fElIdType = ElectronTools::kVBTFWorkingPointFakeableId;
+  else if (fElectronIDType.CompareTo("VetoId") == 0) 
+    fElIdType = ElectronTools::kVetoId;
   else if (fElectronIDType.CompareTo("VBTFWorkingPoint95Id") == 0) 
     fElIdType = ElectronTools::kVBTFWorkingPoint95Id;
   else if (fElectronIDType.CompareTo("VBTFWorkingPoint90Id") == 0) 
@@ -977,6 +1009,8 @@ void ElectronIDMod::Setup()
     fElIsoType = ElectronTools::kVBTFWorkingPoint70Iso;
   else if (fElectronIsoType.CompareTo("MVA_BDTG_IDIsoCombined") == 0 )
     fElIsoType = ElectronTools::kMVAIso_BDTG_IDIsoCombined;
+  else if (fElectronIsoType.CompareTo("PFIso_Rp3") == 0)
+    fElIsoType = ElectronTools::kPFIso_Rp3;
   else if (fElectronIsoType.CompareTo("PFIso_HWW2012TrigV0") == 0)
     fElIsoType = ElectronTools::kPFIso_HWW2012TrigV0;
   else if (fElectronIsoType.CompareTo("PFIso_HggLeptonTag2012") == 0)

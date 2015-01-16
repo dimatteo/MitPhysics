@@ -64,6 +64,13 @@ namespace mithep
                                               ElectronTools::EElectronEffectiveAreaTarget EffectiveAreaTarget,
                                               const ElectronCol *goodElectrons,
                                               const MuonCol *goodMuons, Double_t dRMax = 0.4, Bool_t isDebug = kFALSE);
+      static Double_t PFElectronIsolation2012(const Electron *ele, const Vertex *vertex, 
+                                              const PFCandidateCol *PFCands, 
+                                              const PileupEnergyDensityCol *PileupEnergyDensity,
+                                              ElectronTools::EElectronEffectiveAreaTarget EffectiveAreaTarget,
+                                              ElectronTools::EElectronEffectiveAreaType EffectiveAreaType,
+                                              const ElectronCol *goodElectrons,
+                                              const MuonCol *goodMuons, Double_t dRMax = 0.4, Bool_t isDebug = kFALSE);
       static Double_t PFElectronIsolation2012LepTag(const Electron *ele, const Vertex *vertex, 
 						    const PFCandidateCol *PFCands, 
 						    const PileupEnergyDensityCol *PileupEnergyDensity,

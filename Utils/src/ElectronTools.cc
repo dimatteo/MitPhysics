@@ -48,6 +48,15 @@ Bool_t ElectronTools::PassCustomID(const Electron *ele, EElIdType idType) {
     {0.0,   0.0,   0,     0,     0,      0,      0,      0     }  //extra cuts fbrem and E_Over_P 
   };            
 
+  Double_t Veto[6][8] = {
+    {0.15,  0.15,  0.15,  0.15,  999.,   999.,   999.,   999.  }, //hovere
+    {0.01,  0.01,  0.01,  0.01,  0.03,   0.03,   0.03,   0.03  }, //sigmaetaeta
+    {0.8,   0.8,   0.8,   0.8,   0.7,    0.7,    0.7,    0.7   }, //deltaphiin
+    {0.007, 0.007, 0.007, 0.007, 0.010,  0.010,  0.010,  0.010 }, //deltaetain
+    {0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,    0.0   }, //eoverp
+    {0.0,   0.0,   0,     0,     0,      0,      0,      0     }  //extra cuts fbrem and E_Over_P 
+  };            
+
   Double_t VBTFWorkingPoint95[6][8] = {
     {0.15,  0.15,  0.15,  0.15,  0.07,   0.07,   0.07,   0.07  }, //hovere
     {0.01,  0.01,  0.01,  0.01,  0.03,   0.03,   0.03,   0.03  }, //sigmaetaeta
@@ -120,6 +129,9 @@ Bool_t ElectronTools::PassCustomID(const Electron *ele, EElIdType idType) {
       break;
     case kVBTFWorkingPointFakeableId:
       memcpy(fCuts,VBTFWorkingPointFakeable,sizeof(fCuts));
+      break;
+    case kVetoId:
+      memcpy(fCuts,Veto,sizeof(fCuts));
       break;
     case kVBTFWorkingPoint95Id:
       memcpy(fCuts,VBTFWorkingPoint95,sizeof(fCuts));
@@ -1277,6 +1289,15 @@ Double_t ElectronTools::ElectronEffectiveArea(EElectronEffectiveAreaType type, D
       if (fabs(SCEta) >= 2.3 && fabs(SCEta) < 2.4 ) EffectiveArea = 0.063;
       if (fabs(SCEta) >= 2.4 ) EffectiveArea = 0.028;
     }
+    if (type == kEleGammaAndNeutralHadronIso03) {
+      if (fabs(SCEta) >= 0.0 && fabs(SCEta) < 1.0 ) EffectiveArea = 0.130;
+      if (fabs(SCEta) >= 1.0 && fabs(SCEta) < 1.479 ) EffectiveArea = 0.137;
+      if (fabs(SCEta) >= 1.479 && fabs(SCEta) < 2.0 ) EffectiveArea = 0.067;
+      if (fabs(SCEta) >= 2.0 && fabs(SCEta) < 2.2 ) EffectiveArea = 0.089;
+      if (fabs(SCEta) >= 2.2 && fabs(SCEta) < 2.3 ) EffectiveArea = 0.107;
+      if (fabs(SCEta) >= 2.3 && fabs(SCEta) < 2.4 ) EffectiveArea = 0.110;
+      if (fabs(SCEta) >= 2.4) EffectiveArea = 0.138;
+    }				
     if (type == kEleGammaAndNeutralHadronIso04) {
       if (fabs(SCEta) >= 0.0 && fabs(SCEta) < 1.0 ) EffectiveArea = 0.208;
       if (fabs(SCEta) >= 1.0 && fabs(SCEta) < 1.479 ) EffectiveArea = 0.209;

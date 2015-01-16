@@ -35,6 +35,7 @@ namespace mithep {
         kCustomIdLoose,     //"CustomLoose"
         kCustomIdTight,     //"CustomTight"
         kVBTFWorkingPointFakeableId,
+        kVetoId,
         kVBTFWorkingPoint95Id,
         kVBTFWorkingPoint90Id,
         kVBTFWorkingPoint85Id,
@@ -70,6 +71,7 @@ namespace mithep {
         kVBTFWorkingPoint80Iso,
         kVBTFWorkingPoint70Iso,
         kMVAIso_BDTG_IDIsoCombined,
+        kPFIso_Rp3,
         kPFIso_HWW2012TrigV0,
 	kPFIso_HggLeptonTag2012,
 	kPFIso_HggLeptonTag2012HCP,
