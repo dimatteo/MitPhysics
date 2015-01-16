@@ -525,7 +525,7 @@ Double_t IsolationTools::PFElectronIsolation2012(const Electron *ele, const Vert
                                                  ElectronTools::EElectronEffectiveAreaType EffectiveAreaType,
                                                  const ElectronCol *goodElectrons,
                                                  const MuonCol *goodMuons, Double_t dRMax,
-						 Bool_t isDebug)
+                                                 Bool_t isDebug)
 {
   Double_t tmpChargedIso_DR       = 0;
   Double_t tmpGammaIso_DR         = 0;
