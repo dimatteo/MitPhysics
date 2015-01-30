@@ -126,9 +126,11 @@ void JetIDMod::SlaveBegin()
 				    string("/src/MitPhysics/Utils/python/JetIdParams_cfi.py")));
     else
       fJetIDMVA->Initialize(JetIDMVA::kLoose,
-			    TString(getenv("MIT_DATA")+string("/mva_JetID_lowpt.weights.xml")),
-			    TString(getenv("MIT_DATA")+string("/mva_JetID_highpt.weights.xml")),
-			    JetIDMVA::kBaseline,
+			    TString(getenv("MIT_DATA")+
+				    string("/TMVAClassificationCategory_JetID_53X_Dec2012.weights.xml")),
+			    TString(getenv("MIT_DATA")+
+				    string("/TMVAClassificationCategory_JetID_53X_Dec2012.weights.xml")),
+			    JetIDMVA::k53,
 			    TString(getenv("CMSSW_BASE")+
 				    string("/src/MitPhysics/Utils/python/JetIdParams_cfi.py")));
   }
