@@ -45,6 +45,8 @@ namespace mithep
       void               SetMinDeltaRToElectron(Double_t dr)     { fMinDeltaRToElectron = dr;   }
       void               SetMinDeltaRToMuon(Double_t dr)         { fMinDeltaRToMuon     = dr;   }
       void               SetMinDeltaRToPhoton(Double_t dr)       { fMinDeltaRToPhoton   = dr;   }
+      void               SetApplyMuonRemoval(Bool_t b)           { fApplyMuonRemoval    = b;    }
+      void               SetApplyElectronRemoval(Bool_t b)       { fApplyElectronRemoval= b;    }
       void               SetApplyPhotonRemoval(Bool_t b)         { fApplyPhotonRemoval  = b;    }
       void               SetApplyTauRemoval(Bool_t b)            { fApplyTauRemoval     = b;    }
       void               SetOutputName(const char *name)         { SetCleanJetsName(name);      }
@@ -62,10 +64,12 @@ namespace mithep
       Double_t           fMinDeltaRToMuon;      //delta R for separating muons from jets
       Double_t           fMinDeltaRToPhoton;    //delta R for separating photons from jets
       Double_t           fMinDeltaRToTau;       //delta R for separating taus from jets
+      Bool_t             fApplyMuonRemoval;     //apply muon removal?
+      Bool_t             fApplyElectronRemoval; //apply electron removal?
       Bool_t             fApplyPhotonRemoval;   //apply photon removal?
       Bool_t             fApplyTauRemoval;      //apply tau removal?
    
-    ClassDef(JetCleaningMod, 1) // Jet cleaning module
+    ClassDef(JetCleaningMod, 2) // Jet cleaning module
   };
 }
 #endif

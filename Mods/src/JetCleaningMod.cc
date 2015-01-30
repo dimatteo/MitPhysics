@@ -26,6 +26,8 @@ JetCleaningMod::JetCleaningMod(const char *name, const char *title) :
   fMinDeltaRToMuon(0.3),
   fMinDeltaRToPhoton(0.3),
   fMinDeltaRToTau(0.3),
+  fApplyMuonRemoval(kTRUE),
+  fApplyElectronRemoval(kTRUE),
   fApplyPhotonRemoval(kFALSE),
   fApplyTauRemoval(kFALSE)
 {
@@ -40,13 +42,13 @@ void JetCleaningMod::Process()
   // get input collections
   const JetCol  *GoodJets       = GetObjThisEvt<JetCol>(fGoodJetsName);
   const ElectronCol *CleanElectrons = 0;
-  if (!fCleanElectronsName.IsNull())
+  if (fApplyElectronRemoval && !fCleanElectronsName.IsNull())
     CleanElectrons = GetObjThisEvt<ElectronCol>(fCleanElectronsName);
   const MuonCol *CleanMuons = 0;
-  if (!fCleanMuonsName.IsNull())
+  if (fApplyMuonRemoval && !fCleanMuonsName.IsNull())
     CleanMuons = GetObjThisEvt<MuonCol>(fCleanMuonsName);
   const PhotonCol   *CleanPhotons   = 0;
-  if (!fCleanPhotonsName.IsNull())
+  if (fApplyPhotonRemoval && !fCleanPhotonsName.IsNull())
     CleanPhotons    = GetObjThisEvt<PhotonCol>(fCleanPhotonsName);
   const TauCol   *CleanTaus   = 0;
   if (fApplyTauRemoval && !fCleanTausName.IsNull())
@@ -62,7 +64,7 @@ void JetCleaningMod::Process()
 
     // check for overlap with an Electron
     Bool_t isElectronOverlap = kFALSE;
-    if (CleanElectrons) {
+    if (fApplyElectronRemoval && CleanElectrons) {
       UInt_t n = CleanElectrons->GetEntries();
       for (UInt_t j=0; j<n; ++j) {
         Double_t deltaR = MathUtils::DeltaR(CleanElectrons->At(j)->Phi(),
@@ -79,7 +81,7 @@ void JetCleaningMod::Process()
 
     // check for overlap with an Muon
     Bool_t isMuonOverlap = kFALSE;
-    if (CleanMuons) {
+    if (fApplyMuonRemoval && CleanMuons) {
       UInt_t n = CleanMuons->GetEntries();
       for (UInt_t j=0; j<n; ++j) {
         Double_t deltaR = MathUtils::DeltaR(CleanMuons->At(j)->Mom(),jet->Mom());  
